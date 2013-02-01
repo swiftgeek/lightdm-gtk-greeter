@@ -317,6 +317,15 @@
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="background_window">
+    <property name="name">background_window</property>
+    <property name="can_focus">False</property>
+    <property name="decorated">False</property>
+    <property name="has_resize_grip">False</property>
+    <property name="opacity">1</property>
+    <property name="accept-focus">False</property>
+    <property name="focus-on-map">False</property>
+  </object>
   <object class="GtkListStore" id="session_liststore">
     <columns>
       <!-- column-name label -->

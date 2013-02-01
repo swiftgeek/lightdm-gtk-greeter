@@ -35,7 +35,7 @@
 static LightDMGreeter *greeter;
 static GKeyFile *state;
 static gchar *state_filename;
-static GtkWindow *login_window, *panel_window;
+static GtkWindow *login_window, *panel_window, *background_window;
 static GtkButton *login_button, *cancel_button;
 static GtkLabel *message_label, *prompt_label;
 static GtkWidget *login_box, *prompt_box;
@@ -1050,7 +1050,7 @@ main (int argc, char **argv)
         return EXIT_FAILURE;
 
     /* Set default cursor */
-    gdk_window_set_cursor (gdk_get_default_root_window (), gdk_cursor_new (GDK_LEFT_PTR));
+    //gdk_window_set_cursor (gdk_get_default_root_window (), gdk_cursor_new (GDK_LEFT_PTR));
 
     /* Load background */
     value = g_key_file_get_value (config, "greeter", "background", NULL);
@@ -1136,6 +1136,7 @@ main (int argc, char **argv)
     }
     g_clear_error (&error);
 
+    background_window = GTK_WINDOW (gtk_builder_get_object (builder, "background_window"));
     login_window = GTK_WINDOW (gtk_builder_get_object (builder, "login_window"));
     login_box = GTK_WIDGET (gtk_builder_get_object (builder, "login_box"));
     login_button = GTK_BUTTON (gtk_builder_get_object (builder, "login_button"));
@@ -1299,8 +1300,22 @@ main (int argc, char **argv)
 
     gtk_builder_connect_signals(builder, greeter);
 
+
+    //background_window placeholder
+    gdk_screen_get_monitor_geometry (gdk_screen_get_default (), gdk_screen_get_primary_monitor (gdk_screen_get_default ()), &monitor_geometry);
+    gtk_widget_show (GTK_WIDGET (background_window));
+    gtk_window_resize (background_window, monitor_geometry.width, monitor_geometry.height);
+    gtk_window_move (background_window, monitor_geometry.x, monitor_geometry.y);
+    gdk_window_set_cursor (gtk_widget_get_window (background_window), gdk_cursor_new (GDK_LEFT_PTR));
+//    if (background_pixbuf)
+//      g_object_unref (background_pixbuf);
+//    else
+      gtk_widget_modify_bg(background_window, GTK_STATE_NORMAL, &background_color);
+
+
     gtk_widget_show (GTK_WIDGET (login_window));
     center_window (login_window);
+    gdk_window_set_cursor (gtk_widget_get_window (login_window), gdk_cursor_new (GDK_LEFT_PTR));
     g_signal_connect (GTK_WIDGET (login_window), "size-allocate", G_CALLBACK (center_window), login_window);
 
     gtk_widget_show (GTK_WIDGET (panel_window));
@@ -1309,6 +1324,7 @@ main (int argc, char **argv)
     gdk_screen_get_monitor_geometry (gdk_screen_get_default (), gdk_screen_get_primary_monitor (gdk_screen_get_default ()), &monitor_geometry);
     gtk_window_resize (panel_window, monitor_geometry.width, allocation.height);
     gtk_window_move (panel_window, monitor_geometry.x, monitor_geometry.y);
+    gdk_window_set_cursor (gtk_widget_get_window (panel_window), gdk_cursor_new (GDK_LEFT_PTR));
 
     gtk_widget_show (GTK_WIDGET (login_window));
     gdk_window_focus (gtk_widget_get_window (GTK_WIDGET (login_window)), GDK_CURRENT_TIME);
